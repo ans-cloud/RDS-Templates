@@ -1,7 +1,8 @@
 ﻿
 <#
 .SYNOPSIS
-	v0.1.37
+	v1.0.0 (ANS) - (Based on Microsoft release v0.1.37)
+	ANS Modified for Monitoring tagging
 #>
 [CmdletBinding(SupportsShouldProcess)]
 param (
@@ -627,6 +628,10 @@ try {
 			if ($PSCmdlet.ShouldProcess($SessionHostName, 'Start session host as a background job')) {
 				# $StartSessionHostFullNames.Add($VM.SessionHost.Name, $null)
 				$StartVMjobs += ($VM.Instance | Start-AzVM -AsJob)
+				# ANS Modification to allow monitoring alerts for vm's that are started by auto scale
+                		$tags = (Get-AzResource -ResourceGroupName $VM.Instance.ResourceGroupName -Name $VM.Instance.Name).Tags
+                		$tags.Monitoring = "Yes"
+                		Set-AzResource -ResourceGroupName $VM.Instance.ResourceGroupName -Name $VM.Instance.Name -ResourceType "Microsoft.Compute/VirtualMachines" -Tag $tags -Force
 			}
 
 			--$Ops.nVMsToStart
@@ -750,6 +755,10 @@ try {
 				# $StopSessionHostFullNames.Add($SessionHost.Name, $null)
 				$StopVMjobs += ($VM.StopJob = $VM.Instance | Stop-AzVM -Force -AsJob)
 				$VMsToStop.Add($SessionHostName, $VM)
+				# ANS Modification to prevent monitoring alerts for vm's that are stopped by auto scale
+                		$tags = (Get-AzResource -ResourceGroupName $VM.Instance.ResourceGroupName -Name $VM.Instance.Name).Tags
+                		$tags.Monitoring = "No"
+                		Set-AzResource -ResourceGroupName $VM.Instance.ResourceGroupName -Name $VM.Instance.Name -ResourceType "Microsoft.Compute/VirtualMachines" -Tag $tags -Force
 			}
 		}
 
@@ -777,6 +786,10 @@ try {
 				# $StopSessionHostFullNames.Add($VM.SessionHost.Name, $null)
 				$StopVMjobs += ($VM.StopJob = $VM.Instance | Stop-AzVM -Force -AsJob)
 				$VMsToStop.Add($SessionHostName, $VM)
+				# ANS Modification to prevent monitoring alerts for vm's that are stopped by auto scale
+                		$tags = (Get-AzResource -ResourceGroupName $VM.Instance.ResourceGroupName -Name $VM.Instance.Name).Tags
+                		$tags.Monitoring = "No"
+                		Set-AzResource -ResourceGroupName $VM.Instance.ResourceGroupName -Name $VM.Instance.Name -ResourceType "Microsoft.Compute/VirtualMachines" -Tag $tags -Force
 			}
 		}
 	}
