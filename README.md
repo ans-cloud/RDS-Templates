@@ -5,6 +5,6 @@ This repository contains latest version of RDS deployment templates, DSC resourc
 ### Quick links
 
 * ANS-Cloud/RDS-Templates @Github (this repo)
-  > [WVD-Scaling-Script](https://github.com/Azure/RDS-Templates/tree/master/wvd-templates/wvd-scaling-script)
+  > [WVD-Scaling-Script](https://github.com/ans-cloud/RDS-Templates/tree/master/wvd-templates/wvd-scaling-script)
 
  
